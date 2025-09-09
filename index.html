@@ -1,0 +1,121 @@
+﻿<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="icon.jpg">
+    <title>Генератор Эвентов</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1> Генератор Эвентов</h1>
+            <p>Скрипт для управления эвентами и раздачи призов</p>
+        </div>
+        
+        <div class="content">
+            <!-- Шаг 1: Ввод участников -->
+            <div id="step1" class="step active">
+                <h2> Регистрация участников</h2>
+                <p>Введите список участников через запятую без пробелов</p>
+                
+                <div class="form-group">
+                    <label for="participants">Участники:</label>
+                    <textarea id="participants" placeholder="Например: 3,4,70,9,1" rows="3"></textarea>
+                </div>
+                
+                <button class="btn" onclick="registerParticipants()">Зарегистрировать участников</button>
+            </div>
+            
+            <!-- Главное меню -->
+            <div id="mainMenu" class="step">
+                <h2> Главное меню</h2>
+                <div class="participants-list">
+                    <h4>Зарегистрированные участники:</h4>
+                    <div id="participantsDisplay"></div>
+                </div>
+                
+                <div class="menu-buttons">
+                    <button class="menu-btn" onclick="showRandomNumbers()">
+                        <span></span>
+                        Генерация случайных чисел
+                    </button>
+                    <button class="menu-btn" onclick="showPrizeDistribution()">
+                        <span></span>
+                        Выдача призов
+                    </button>
+                </div>
+                
+                <div style="text-align: center; margin-top: 30px;">
+                    <button class="btn btn-secondary" onclick="resetApp()">Сбросить участников</button>
+                </div>
+            </div>
+            
+            <!-- Генерация случайных чисел -->
+            <div id="randomNumbers" class="step">
+                <button class="back-btn" onclick="showMainMenu()"> Назад в меню</button>
+                <h2> Генерация случайных чисел</h2>
+                
+                <div class="form-group">
+                    <label for="numbersCount">Количество чисел для генерации:</label>
+                    <input type="number" id="numbersCount" min="1" placeholder="Введите количество">
+                </div>
+                
+                <button class="btn" onclick="generateRandomNumbers()">Сгенерировать числа</button>
+                
+                <div id="randomResult" class="result-box" style="display: none;">
+                    <h3> Сгенерированные числа:</h3>
+                    <div id="randomNumbersDisplay" class="result-text"></div>
+                    <div id="randomMapping" style="margin-top: 15px; text-align: left;"></div>
+                </div>
+            </div>
+            
+            <!-- Выдача призов -->
+            <div id="prizeDistribution" class="step">
+                <button class="back-btn" onclick="showMainMenu()"> Назад в меню</button>
+                <h2> Выдача призов</h2>
+                
+                <div class="form-group">
+                    <label for="rewardType">Тип награды:</label>
+                    <select id="rewardType">
+                        <option value="1">Маты</option>
+                        <option value="2">Деньги</option>
+                        <option value="3">Коины</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="rewardAmount">Количество награды:</label>
+                    <input type="number" id="rewardAmount" min="1" placeholder="Введите количество">
+                </div>
+                
+                <div class="form-group">
+                    <label for="statics">Статики (через запятую без пробелов):</label>
+                    <textarea id="statics" placeholder="Например: 123,456,789" rows="2"></textarea>
+                    <div style="margin-top: 10px;">
+                        <button class="btn btn-secondary" onclick="fillStaticsFromSelected()" style="min-width: auto; padding: 8px 15px; font-size: 14px;">
+                             Заполнить из выбранных участников
+                        </button>
+                    </div>
+                </div>
+                
+                <button class="btn" onclick="generateCommand()">Сгенерировать команду</button>
+                
+                <div id="commandResult" class="result-box" style="display: none;">
+                    <h3> Сгенерированная команда:</h3>
+                    <div id="commandDisplay" class="result-text"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="author-text">by цфудик</div>
+    
+    <div id="copyNotification" class="copy-notification">
+         Скопировано в буфер обмена!
+    </div>
+    
+    <script src="script.js"></script>
+</body>
+</html>
