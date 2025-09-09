@@ -400,3 +400,16 @@ p {
         margin: 0 20px;
     }
 }
+
+/* Стили для кликабельного текста автора */
+.author-text {
+    text-decoration: none;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.author-text:hover {
+    color: rgba(79, 172, 254, 1);
+    text-shadow: 2px 2px 4px rgba(79, 172, 254, 0.5);
+    transform: translateX(-50%) scale(1.15);
+}
