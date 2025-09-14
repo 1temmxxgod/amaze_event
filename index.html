@@ -6,6 +6,33 @@
     <link rel="icon" href="icon.jpg">
     <title>Генератор Эвентов</title>
     <link rel="stylesheet" href="styles.css">
+    <style>
+.custom-notification {
+    position: fixed !important;
+    top: 20px !important;
+    right: 20px !important;
+    transform: translateX(400px) !important;
+    background: rgba(0, 0, 0, 0.9) !important;
+    color: white !important;
+    padding: 16px 24px !important;
+    border-radius: 12px !important;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.5) !important;
+    z-index: 2000 !important;
+    backdrop-filter: blur(15px) !important;
+    border: 1px solid rgba(255, 255, 255, 0.3) !important;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    text-align: left !important;
+    min-width: 280px !important;
+    max-width: 400px !important;
+    font-size: 15px !important;
+    line-height: 1.5 !important;
+    font-weight: 500 !important;
+}
+
+.custom-notification.show {
+    transform: translateX(0) !important;
+}
+</style>
 </head>
 <body>
     <div class="container">
@@ -17,20 +44,25 @@
         <div class="content">
             <!-- Шаг 1: Ввод участников -->
             <div id="step1" class="step active">
-                <h2> Регистрация участников</h2>
+                <h2>📝 Регистрация участников (статиков)</h2>
                 <p>Введите список участников через запятую без пробелов</p>
                 
                 <div class="form-group">
-                    <label for="participants">Участники:</label>
+                    <label for="participants">Участники (статики):</label>
                     <textarea id="participants" placeholder="Например: 3,4,70,9,1" rows="3"></textarea>
                 </div>
                 
-                <button class="btn" onclick="registerParticipants()">Зарегистрировать участников</button>
+                <div style="display: flex; gap: 10px; margin-top: 20px;">
+                    <button class="btn" onclick="registerParticipants()">Зарегистрировать участников</button>
+                    <button class="btn btn-secondary" onclick="saveCurrentStatics()" style="min-width: auto; padding: 8px 15px; font-size: 14px;">
+                        💾 Сохранить статики
+                    </button>
+                </div>
             </div>
             
             <!-- Главное меню -->
             <div id="mainMenu" class="step">
-                <h2> Главное меню</h2>
+                <h2>🏠 Главное меню</h2>
                 <div class="participants-list">
                     <h4>Зарегистрированные участники:</h4>
                     <div id="participantsDisplay"></div>
@@ -38,11 +70,11 @@
                 
                 <div class="menu-buttons">
                     <button class="menu-btn" onclick="showRandomNumbers()">
-                        <span></span>
+                        <span>🎲</span>
                         Генерация случайных чисел
                     </button>
                     <button class="menu-btn" onclick="showPrizeDistribution()">
-                        <span></span>
+                        <span>🏆</span>
                         Выдача призов
                     </button>
                 </div>
@@ -73,8 +105,8 @@
             
             <!-- Выдача призов -->
             <div id="prizeDistribution" class="step">
-                <button class="back-btn" onclick="showMainMenu()"> Назад в меню</button>
-                <h2> Выдача призов</h2>
+                <button class="back-btn" onclick="showMainMenu()">← Назад в меню</button>
+                <h2>🏆 Выдача призов</h2>
                 
                 <div class="form-group">
                     <label for="rewardType">Тип награды:</label>
@@ -95,7 +127,7 @@
                     <textarea id="statics" placeholder="Например: 123,456,789" rows="2"></textarea>
                     <div style="margin-top: 10px;">
                         <button class="btn btn-secondary" onclick="fillStaticsFromSelected()" style="min-width: auto; padding: 8px 15px; font-size: 14px;">
-                             Заполнить из выбранных участников
+                            💾 Заполнить из сохраненных статиков
                         </button>
                     </div>
                 </div>
@@ -103,7 +135,7 @@
                 <button class="btn" onclick="generateCommand()">Сгенерировать команду</button>
                 
                 <div id="commandResult" class="result-box" style="display: none;">
-                    <h3> Сгенерированная команда:</h3>
+                    <h3>📋 Сгенерированная команда:</h3>
                     <div id="commandDisplay" class="result-text"></div>
                 </div>
             </div>

@@ -1,14 +1,13 @@
 ﻿// Global variables
 let participants = [];
-let selectedParticipants = []; // Массив для хранения выбранных участников
+let selectedParticipants = [];
+let savedStatics = [];
 
 // Custom notification system
 function showNotification(message, type = 'info', duration = 3000) {
-    // Remove existing notifications
     const existingNotifications = document.querySelectorAll('.custom-notification');
     existingNotifications.forEach(notification => notification.remove());
     
-    // Create notification element
     const notification = document.createElement('div');
     notification.className = `custom-notification ${type}`;
     notification.innerHTML = `
@@ -18,15 +17,12 @@ function showNotification(message, type = 'info', duration = 3000) {
         <div>${message}</div>
     `;
     
-    // Add to body
     document.body.appendChild(notification);
     
-    // Show notification
     setTimeout(() => {
         notification.classList.add('show');
     }, 100);
     
-    // Hide notification
     setTimeout(() => {
         notification.classList.remove('show');
         setTimeout(() => {
@@ -96,6 +92,10 @@ function registerParticipants() {
     
     showNotification(`Зарегистрировано ${participants.length} участников`, 'success');
     showMainMenu();
+    // Также сохраняем участников как статики
+    savedStatics = [...participants];
+    console.log('Участники автоматически сохранены как статики:', savedStatics);
+    showNotification(`✅ Участники зарегистрированы и сохранены как статики: ${savedStatics.join(", ")}`, "success");
 }
 
 // Navigation functions
@@ -117,11 +117,11 @@ function showPrizeDistribution() {
     document.getElementById('prizeDistribution').classList.add('active');
     document.getElementById('commandResult').style.display = 'none';
     
-    // Автоматически заполняем статики, если есть выбранные участники
-    if (selectedParticipants.length > 0) {
+    // Автоматически заполняем статики, если есть сохраненные статики
+    if (savedStatics.length > 0) {
         const staticsInput = document.getElementById('statics');
-        staticsInput.value = selectedParticipants.join(',');
-        showNotification('Статики автоматически заполнены из выбранных участников', 'info');
+        staticsInput.value = savedStatics.join(',');
+        showNotification('Статики автоматически заполнены из сохраненных данных', 'info');
     }
 }
 
@@ -165,6 +165,10 @@ function generateRandomNumbers() {
     // Сохраняем выбранных участников для использования в командах
     selectedParticipants = numbers.map(n => participants[n-1]);
     
+    // Сохраняем статики в отдельный массив для постоянного хранения
+    savedStatics = [...selectedParticipants];
+    console.log('Статики сохранены из генерации:', savedStatics);
+    
     // Display results
     document.getElementById('randomNumbersDisplay').textContent = numbers.join(',');
     
@@ -174,7 +178,7 @@ function generateRandomNumbers() {
         numbers.map(n => `<div style="margin: 5px 0; padding: 5px; background: rgba(255, 255, 255, 0.1); border-radius: 5px; color: white;">${n}  ${participants[n-1]}</div>`).join('');
     
     // Добавляем информацию о сохранении для команд
-    mapping.innerHTML += '<div style="margin-top: 15px; padding: 10px; background: rgba(79, 172, 254, 0.2); border-radius: 8px; color: white; text-align: center;"><strong> Статики сохранены для команд: ' + selectedParticipants.join(', ') + '</strong></div>';
+    mapping.innerHTML += '<div style="margin-top: 15px; padding: 10px; background: rgba(79, 172, 254, 0.2); border-radius: 8px; color: white; text-align: center;"><strong> Статики сохранены для команд: ' + savedStatics.join(', ') + '</strong></div>';
     
     document.getElementById('randomResult').style.display = 'block';
     
@@ -183,7 +187,7 @@ function generateRandomNumbers() {
         copyToClipboard(numbers.join(','));
     };
     
-    showNotification(`Сгенерировано ${count} случайных чисел. Статики сохранены!`, 'success');
+    showNotification(`Сгенерировано ${count} случайных чисел. Статики сохранены: ${savedStatics.join(', ')}`, 'success');
 }
 
 // Command generation
@@ -208,6 +212,12 @@ function generateCommand() {
         return;
     }
     
+    // Сохраняем введенные статики для будущего использования
+    savedStatics = [...staticsList];
+    console.log('Статики сохранены:', savedStatics);
+    console.log('savedStatics.length:', savedStatics.length);
+    console.log('staticsList:', staticsList);
+    
     const staticsStr = staticsList.join(',');
     const staticsWithBrackets = `[${staticsStr}]`;
     
@@ -229,7 +239,7 @@ function generateCommand() {
         copyToClipboard(command);
     };
     
-    showNotification('Команда сгенерирована!', 'success');
+    showNotification(`Команда сгенерирована! Статики сохранены: ${savedStatics.join(', ')}`, 'success');
 }
 
 // Reset app
@@ -237,11 +247,57 @@ function resetApp() {
     showNotification('Сброс участников...', 'info', 1000);
     setTimeout(() => {
         participants = [];
-        selectedParticipants = []; // Очищаем и выбранных участников
+        selectedParticipants = [];
+        savedStatics = [];
         document.getElementById('participants').value = '';
         hideAllSteps();
         document.getElementById('step1').classList.add('active');
     }, 1000);
+}
+
+// Функция для сохранения текущих статиков
+function saveCurrentStatics() {
+    const statics = document.getElementById("participants").value.trim();
+    
+    if (!statics) {
+        showNotification("Пожалуйста, введите участников (статики) для сохранения!", "warning");
+        return;
+    }
+    
+    const staticsList = statics.split(",").map(s => s.trim()).filter(s => s);
+    if (staticsList.length === 0) {
+        showNotification("Пожалуйста, введите корректных участников (статики)!", "error");
+        return;
+    }
+    
+    savedStatics = [...staticsList];
+    console.log("Статики сохранены из участников:", savedStatics);
+    console.log("savedStatics.length:", savedStatics.length);
+    
+    showNotification(`✅ Статики сохранены: ${savedStatics.join(", ")}`, "success");
+}
+
+// Простая функция для тестирования
+function testSaveStatics() {
+    savedStatics = ["123", "456", "789"];
+    console.log("Тестовые статики сохранены:", savedStatics);
+    showNotification("Тестовые статики сохранены: 123, 456, 789", "success");
+}
+
+// Функция для заполнения статиков из сохраненных данных
+function fillStaticsFromSelected() {
+    console.log('savedStatics:', savedStatics);
+    console.log('savedStatics.length:', savedStatics.length);
+    console.log('savedStatics type:', typeof savedStatics);
+    
+    if (savedStatics.length === 0) {
+        showNotification('Нет сохраненных статиков! Сначала сгенерируйте числа или введите статики вручную и сгенерируйте команду.', 'warning');
+        return;
+    }
+    
+    const staticsInput = document.getElementById('statics');
+    staticsInput.value = savedStatics.join(',');
+    showNotification(`Заполнено ${savedStatics.length} статиков из сохраненных данных`, 'success');
 }
 
 // Initialize app
@@ -272,15 +328,3 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 });
-
-// Функция для заполнения статиков из выбранных участников
-function fillStaticsFromSelected() {
-    if (selectedParticipants.length === 0) {
-        showNotification('Сначала сгенерируйте случайные числа!', 'warning');
-        return;
-    }
-    
-    const staticsInput = document.getElementById('statics');
-    staticsInput.value = selectedParticipants.join(',');
-    showNotification(`Заполнено ${selectedParticipants.length} статиков из выбранных участников`, 'success');
-}
