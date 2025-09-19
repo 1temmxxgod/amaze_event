@@ -11,7 +11,7 @@ function showNotification(message, type = 'info', duration = 3000) {
     const notification = document.createElement('div');
     notification.className = `custom-notification ${type}`;
     notification.innerHTML = `
-        <div style="font-size: 1.1em; font-weight: 600; margin-bottom: 10px;">
+        <div style="font-size: 1.3em; font-weight: 600; margin-bottom: 15px;">
             ${type === 'error' ? '' : type === 'success' ? '' : type === 'warning' ? '' : 'ℹ'}
         </div>
         <div>${message}</div>
@@ -95,7 +95,7 @@ function registerParticipants() {
     // Также сохраняем участников как статики
     savedStatics = [...participants];
     console.log('Участники автоматически сохранены как статики:', savedStatics);
-    showNotification(`✅ Участники зарегистрированы и сохранены как статики: ${savedStatics.join(", ")}`, "success");
+    showNotification(` Участники зарегистрированы и сохранены как статики: ${savedStatics.join(", ")}`, "success");
 }
 
 // Navigation functions
@@ -123,6 +123,12 @@ function showPrizeDistribution() {
         staticsInput.value = savedStatics.join(',');
         showNotification('Статики автоматически заполнены из сохраненных данных', 'info');
     }
+}
+
+function showLeaderPayments() {
+    hideAllSteps();
+    document.getElementById('leaderPayments').classList.add('active');
+    document.getElementById('leaderResult').style.display = 'none';
 }
 
 function hideAllSteps() {
@@ -178,7 +184,7 @@ function generateRandomNumbers() {
         numbers.map(n => `<div style="margin: 5px 0; padding: 5px; background: rgba(255, 255, 255, 0.1); border-radius: 5px; color: white;">${n}  ${participants[n-1]}</div>`).join('');
     
     // Добавляем информацию о сохранении для команд
-    mapping.innerHTML += '<div style="margin-top: 15px; padding: 10px; background: rgba(79, 172, 254, 0.2); border-radius: 8px; color: white; text-align: center;"><strong> Статики сохранены для команд: ' + savedStatics.join(', ') + '</strong></div>';
+    mapping.innerHTML += '<div style="margin-top: 15px; padding: 10px; background: rgba(255, 107, 107, 0.2); border-radius: 8px; color: white; text-align: center;"><strong> Статики сохранены для команд: ' + savedStatics.join(', ') + '</strong></div>';
     
     document.getElementById('randomResult').style.display = 'block';
     
@@ -215,8 +221,6 @@ function generateCommand() {
     // Сохраняем введенные статики для будущего использования
     savedStatics = [...staticsList];
     console.log('Статики сохранены:', savedStatics);
-    console.log('savedStatics.length:', savedStatics.length);
-    console.log('staticsList:', staticsList);
     
     const staticsStr = staticsList.join(',');
     const staticsWithBrackets = `[${staticsStr}]`;
@@ -240,6 +244,59 @@ function generateCommand() {
     };
     
     showNotification(`Команда сгенерирована! Статики сохранены: ${savedStatics.join(', ')}`, 'success');
+}
+
+// Leader payments generation
+function generateLeaderCommands() {
+    const leaderStatic = document.getElementById('leaderStatic').value.trim();
+    const leaderCoins = document.getElementById('leaderCoins').value;
+    const leaderMats = document.getElementById('leaderMats').value;
+    const leaderMoney = document.getElementById('leaderMoney').value;
+    
+    if (!leaderStatic) {
+        showNotification('Пожалуйста, введите статик лидера!', 'warning');
+        return;
+    }
+    
+    if (!leaderCoins && !leaderMats && !leaderMoney) {
+        showNotification('Пожалуйста, введите хотя бы одно количество награды!', 'warning');
+        return;
+    }
+    
+    const commands = [];
+    
+    // Генерируем команды только для заполненных полей
+    if (leaderCoins && leaderCoins > 0) {
+        commands.push(`!coinsa [${leaderStatic}] ${leaderCoins}`);
+    }
+    
+    if (leaderMats && leaderMats > 0) {
+        commands.push(`!smats [${leaderStatic}] ${leaderMats}`);
+    }
+    
+    if (leaderMoney && leaderMoney > 0) {
+        commands.push(`!scash [${leaderStatic}] ${leaderMoney}`);
+    }
+    
+    if (commands.length === 0) {
+        showNotification('Пожалуйста, введите корректные количества наград!', 'error');
+        return;
+    }
+    
+    // Display results
+    const commandsDisplay = document.getElementById('leaderCommandsDisplay');
+    commandsDisplay.innerHTML = commands.map((command, index) => 
+        `<div class="leader-command" onclick="copyToClipboard('${command}')" style="margin: 15px 0;">
+            <div style="display: flex; align-items: center; justify-content: space-between;">
+                <span>${command}</span>
+                <span style="font-size: 0.8em; opacity: 0.7; margin-left: 10px;">Нажмите для копирования</span>
+            </div>
+        </div>`
+    ).join('');
+    
+    document.getElementById('leaderResult').style.display = 'block';
+    
+    showNotification(`Сгенерировано ${commands.length} команд для выплат лидеру`, 'success');
 }
 
 // Reset app
@@ -272,23 +329,13 @@ function saveCurrentStatics() {
     
     savedStatics = [...staticsList];
     console.log("Статики сохранены из участников:", savedStatics);
-    console.log("savedStatics.length:", savedStatics.length);
     
-    showNotification(`✅ Статики сохранены: ${savedStatics.join(", ")}`, "success");
-}
-
-// Простая функция для тестирования
-function testSaveStatics() {
-    savedStatics = ["123", "456", "789"];
-    console.log("Тестовые статики сохранены:", savedStatics);
-    showNotification("Тестовые статики сохранены: 123, 456, 789", "success");
+    showNotification(` Статики сохранены: ${savedStatics.join(", ")}`, "success");
 }
 
 // Функция для заполнения статиков из сохраненных данных
 function fillStaticsFromSelected() {
     console.log('savedStatics:', savedStatics);
-    console.log('savedStatics.length:', savedStatics.length);
-    console.log('savedStatics type:', typeof savedStatics);
     
     if (savedStatics.length === 0) {
         showNotification('Нет сохраненных статиков! Сначала сгенерируйте числа или введите статики вручную и сгенерируйте команду.', 'warning');
@@ -304,8 +351,8 @@ function fillStaticsFromSelected() {
 document.addEventListener('DOMContentLoaded', function() {
     // Add click effects for result text
     document.addEventListener('click', function(e) {
-        if (e.target.classList.contains('result-text')) {
-            e.target.style.background = 'rgba(232, 245, 232, 0.3)';
+        if (e.target.classList.contains('result-text') || e.target.classList.contains('leader-command')) {
+            e.target.style.background = 'rgba(255, 107, 107, 0.3)';
             setTimeout(() => {
                 e.target.style.background = 'rgba(255, 255, 255, 0.1)';
             }, 200);
